@@ -8,10 +8,10 @@ pygame.init()
 # Diccionario de estados
 estados = {
     1:(0,0), 2:(0,1), 3:(0,2), 4:(0,3),
-    5:(0,0), 6:(0,1), 7:(0,2), 8:(0,3),
-    9:(0,0), 10:(0,1), 11:(0,2), 12:(0,3),
-    13:(0,0), 14:(0,1), 15:(0,2), 16:(0,3)
-           }
+    5:(1,0), 6:(1,1), 7:(1,2), 8:(1,3),
+    9:(2,0), 10:(2,1), 11:(2,2), 12:(2,3),
+    13:(3,0), 14:(3,1), 15:(3,2), 16:(3,3)
+    }
 
 # Definir constantes
 WIDTH, HEIGHT = 600, 600
@@ -46,7 +46,7 @@ def create_pieces():
 
 # Crear las piezas del juego
 pieces = create_pieces()
-selected_piece = None
+selected_index = 0
 
 def draw_board(win, pieces):
     """Dibuja el tablero de ajedrez con imágenes y las piezas"""
@@ -59,52 +59,41 @@ def draw_board(win, pieces):
     for piece in pieces:
         piece.draw(win)
 
-def handle_key_movement(event):
-    """Mueve la pieza seleccionada con las teclas de flecha"""
-    global selected_piece
-    if selected_piece:
-        if event.key == pygame.K_LEFT and selected_piece.x > 0:
-            selected_piece.x -= 1
-        elif event.key == pygame.K_RIGHT and selected_piece.x < COLS - 1:
-            selected_piece.x += 1
-        elif event.key == pygame.K_UP and selected_piece.y > 0:
-            selected_piece.y -= 1
-        elif event.key == pygame.K_DOWN and selected_piece.y < ROWS - 1:
-            selected_piece.y += 1
-        elif event.key == pygame.K_RETURN:
-            selected_piece = None  # Deseleccionar la pieza
-
-def array_movement(array):
-    global selected_piece
-    if selected_piece:
+def state_movement(estado):
+    global selected_index
+    if estado in estados:
+        coordenada = estados[estado]
+        pieces[selected_index].x = coordenada[1]
+        pieces[selected_index].y = coordenada[0]
 
 
-def handle_mouse_click(pos):
-    """Selecciona una pieza con el mouse"""
-    global selected_piece
-    x, y = pos
-    col, row = x // SQUARE_SIZE, y // SQUARE_SIZE  # Convertir a coordenadas de tablero
-    for piece in pieces:
-        if piece.x == col and piece.y == row:
-            selected_piece = piece
-            break
+def change_piece(index):
+    global selected_index
+    if 0 <= index < len(pieces):
+        selected_index = index
 
 def main():
     """Bucle principal del juego"""
     running = True
+    estado_actual = 0
+    ficha_actual = 1
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                handle_mouse_click(pygame.mouse.get_pos())
 
-            elif event.type == pygame.KEYDOWN:
-                handle_key_movement(event)
+        ficha_actual = (ficha_actual + 1) % len(pieces)
+        change_piece(ficha_actual)
+
+        estado_actual = (estado_actual % len(estados)) + 1
+        state_movement(estado_actual)
+
 
         draw_board(win, pieces)
         pygame.display.flip()
+
+        pygame.time.delay(400)
 
     pygame.quit()
 
