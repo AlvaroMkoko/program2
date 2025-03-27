@@ -75,8 +75,8 @@ def change_piece(index):
 def main():
     """Bucle principal del juego"""
     running = True
-    estado_actual = 0
-    ficha_actual = 1
+    estado_actual = 1
+    ficha_actual = 0
 
     while running:
         for event in pygame.event.get():
